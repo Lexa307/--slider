@@ -31,6 +31,7 @@ document.body.appendChild(d);
 const raycaster = new THREE.Raycaster();
 const mouse = new THREE.Vector2(0,0);
 const loader = new THREE.GLTFLoader();
+loader.setCrossOrigin('anonymous');
 const pointtexture = new THREE.TextureLoader().load( 'textures/point.png' );
 const plustexture = new THREE.TextureLoader().load( 'textures/point_plus.png' );
 const flashtexture = new THREE.TextureLoader().load( 'textures/flash.png' );
@@ -191,6 +192,15 @@ class initfactory{
 							this.factoryanimation.point.children[0].visible=true;
 							TweenMax.to(this.factoryanimation.point.children[0].material,1,{opacity:0,repeat:-1});
 							TweenMax.to(this.factoryanimation.point.children[0].scale,1,{x:2.5,y:2.5,repeat:-1});
+							
+							this.factoryanimation.point2.material.map = plustexture;
+							this.factoryanimation.point2.children[0].visible=true;
+							this.factoryanimation.point2.visible = true;
+							TweenMax.to(this.factoryanimation.point2.material,0.5,{opacity:1});
+							TweenMax.to(this.factoryanimation.point2.children[0].material,1,{opacity:0,repeat:-1});
+							TweenMax.to(this.factoryanimation.point2.children[0].scale,1,{x:2.5,y:2.5,repeat:-1});
+							
+							
 					}});
 				TweenMax.to(camera.position,3,{x:51.43743331684462,  y:229.3725250471521,  z:37.041625576757866});
 				this.factoryanimation.ind=1;
@@ -203,7 +213,18 @@ class initfactory{
 				this.factoryanimation.point.add(new THREE.Sprite(new THREE.SpriteMaterial( {map: flashtexture,  transparent:true,opacity:1,depthTest:false } )));
 				this.factoryanimation.point.children[0].visible=false;
 				this.factoryanimation.point.name = "factorypoint";
+				
+				this.factoryanimation.point2 = new THREE.Sprite( this.spriteMaterial.clone() );
+				this.factoryanimation.point2.scale.set(7,7,1.0);
+				this.factoryanimation.point2.add(new THREE.Sprite(new THREE.SpriteMaterial( {map: flashtexture,  transparent:true,opacity:1,depthTest:false } )));
+				this.factoryanimation.point2.children[0].visible = false;
+				this.factoryanimation.point2.visible = false;
+				this.factoryanimation.point2.name = "factorypoint2";
+				this.factoryanimation.point2.material.opacity = 0;
+				this.factoryanimation.point2.position.set(165, 100, -150 );
+				
 				scene.add(this.factoryanimation.point);
+				scene.add(this.factoryanimation.point2);
 				camera.position.set( 1026.6348174297823, 250.68991167435124, 233.76332634535098);
 				this.factoryanimation.ready= true;
 				this.factoryanimation.step1();
@@ -590,6 +611,9 @@ class initstation{
 	this.spriteMaterial = new THREE.SpriteMaterial( {map: this.texture,  transparent:true,depthTest:false } );
 	const light = new THREE.PointLight( 0xa1a1c2, 1, 20000 );
 	scene.background= new THREE.Color(0x221a41);
+	
+	
+				
 	light.position.set( 312.86610164166655, 166.51330968343603, 189.0765995307099);
 	light.castShadow = true;            // default false
 	scene.add( light );
@@ -615,6 +639,12 @@ class initstation{
 				this.stationanimation.point.children[0].visible = true;
 				TweenMax.to(this.stationanimation.point.children[0].material,1,{opacity:0,repeat:-1});
 				TweenMax.to(this.stationanimation.point.children[0].scale,1,{x:2.5,y:2.5,repeat:-1});
+				
+				this.stationanimation.point2.material.map = plustexture;
+				this.stationanimation.point2.children[0].visible = true;
+				TweenMax.to(this.stationanimation.point2.material,1,{opacity:1});
+				TweenMax.to(this.stationanimation.point2.children[0].material,1,{opacity:0,repeat:-1});
+				TweenMax.to(this.stationanimation.point2.children[0].scale,1,{x:2.5,y:2.5,repeat:-1});
 			}});
 			this.stationanimation.ind=0;
 		
@@ -623,6 +653,10 @@ class initstation{
 		step1:()=>{
 			TweenMax.killAll();
 			this.stationanimation.point.children[0].visible=false;
+			TweenMax.to(this.stationanimation.point2.material,0.2,{opacity:0,onComplete:()=>{
+				this.stationanimation.point2.visible=false;
+			}})
+			
 			this.stationanimation.animating=true;
 			this.stationanimation.point.material.map = pointtexture;
 			TweenMax.to(this.stationanimation,3,{linepointfloat:0.6,ease: Power2.easeOut,onUpdate:()=>{
@@ -644,7 +678,16 @@ class initstation{
 			this.stationanimation.point.children[0].visible = false;
 			this.stationanimation.point.name="stationpoint";
 			
+			this.stationanimation.point2 = new THREE.Sprite( this.spriteMaterial.clone() );
+			this.stationanimation.point2.scale.set(7,7,1.0);
+			this.stationanimation.point2.add(new THREE.Sprite(new THREE.SpriteMaterial( {map: flashtexture,  transparent:true,opacity:1,depthTest:false } )));
+			this.stationanimation.point2.children[0].visible = false;
+			this.stationanimation.point2.name = "stationpoint2";
+			this.stationanimation.point2.material.opacity = 0;
+			this.stationanimation.point2.position.set(this.maincurve.getPointAt(0.1).x,this.maincurve.getPointAt(0.1).y,this.maincurve.getPointAt(0.1).z);
+			
 			scene.add(this.stationanimation.point);
+			scene.add(this.stationanimation.point2);
 			
 			camera.position.set(  166.89964963341342,  223.46932037001454,  -386.1775738127469);
 			if(fromindex==1){
@@ -973,6 +1016,11 @@ window.addEventListener("mousewheel", function(e){
  						console.log("нажата точка станции!")
  						
  				}
+ 				
+ 				if(intersects[0].object.name=="stationpoint2"){
+ 						console.log("нажата вторая точка станции!")
+ 						
+ 				}
 
  			}
 		}
@@ -1006,6 +1054,9 @@ window.addEventListener("mousewheel", function(e){
  				
  				if(intersects[0].object.name=="factorypoint"){
  						console.log("нажата точка завода!")
+ 				}
+ 				if(intersects[0].object.name=="factorypoint2"){
+ 						console.log("нажата 2я точка завода!")
  				}
 
  			}
